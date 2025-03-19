@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "250540036317",
+    "project_id": "debo-e6aa7",
+    "storage_bucket": "debo-e6aa7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250540036317:android:ccb7dfaff460c8b401cb34",
+        "android_client_info": {
+          "package_name": "com.debo.debo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "250540036317-4oisik7m61qe7tlmapin8i7g06n5hmal.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.debo.debo",
+            "certificate_hash": "109b3368f2e152477bb91bdf975ab14294f6cf21"
+          }
+        },
+        {
+          "client_id": "250540036317-k11a2hv3anuff8bh2ssfo8sv406shb5l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfzAMR7FeWR5S5oEc4by0-xmULSZJxmRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "250540036317-k11a2hv3anuff8bh2ssfo8sv406shb5l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "250540036317-3s89h6q1krn49bvf004duk71kie541pi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.yourappname"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
