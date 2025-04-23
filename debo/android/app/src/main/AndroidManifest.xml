@@ -46,7 +46,7 @@
         tools:replace="android:label">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.debo.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat.NoActionBar"

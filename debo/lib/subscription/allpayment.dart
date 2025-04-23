@@ -14,13 +14,13 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pay_with_paystack/pay_with_paystack.dart';
-import 'package:paytm_allinonesdk/paytm_allinonesdk.dart';
+// import 'package:paytm_allinonesdk/paytm_allinonesdk.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:provider/provider.dart';
-import 'package:razorpay_web/razorpay_web.dart';
+// import 'package:razorpay_web/razorpay_web.dart';
 import 'package:uuid/uuid.dart';
 
 import '../provider/bottombarprovider.dart';
@@ -87,7 +87,7 @@ class AllPaymentState extends State<AllPayment> {
   final List<PurchaseDetails> _purchases = <PurchaseDetails>[];
 
   /* Razorpay */
-  late Razorpay razorpay;
+  // late Razorpay razorpay;
 
   /* Paytm */
   String paytmResult = "";
@@ -124,7 +124,7 @@ class AllPaymentState extends State<AllPayment> {
     }
 
     /* Razorpay */
-    razorpay = Razorpay();
+    // razorpay = Razorpay();
     super.initState();
   }
 
@@ -186,7 +186,7 @@ class AllPaymentState extends State<AllPayment> {
 
   @override
   void dispose() {
-    razorpay.clear();
+    // razorpay.clear();
     paymentProvider.clearProvider();
     if (!kIsWeb) {
       if (Platform.isIOS) {
@@ -1257,12 +1257,12 @@ class AllPaymentState extends State<AllPayment> {
           'wallets': ['paytm']
         }
       };
-      razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
-      razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
-      razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
+      // razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
+      // razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
+      // razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
 
       try {
-        razorpay.open(options);
+        // razorpay.open(options);
       } catch (e) {
         printLog('Razorpay Error :=========> $e');
       }
@@ -1271,47 +1271,47 @@ class AllPaymentState extends State<AllPayment> {
     }
   }
 
-  void handlePaymentErrorResponse(PaymentFailureResponse response) async {
-    /*
-    * PaymentFailureResponse contains three values:
-    * 1. Error Code
-    * 2. Error Description
-    * 3. Metadata
-    * */
-    Utils.showSnackbar(context, "fail", "payment_fail", true);
-    await paymentProvider.setCurrentPayment("");
-  }
-
-  void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
-    /*
-    * Payment Success Response contains three values:
-    * 1. Order ID
-    * 2. Payment ID
-    * 3. Signature
-    * */
-    paymentProvider.paymentId = response.paymentId.toString();
-    printLog("paymentId ========> ${paymentProvider.paymentId}");
-    Utils.showSnackbar(context, "success", "payment_success", true);
-    if (widget.payType == "Package") {
-      addTransaction(
-          "razorpay",
-          paymentProvider.itemId,
-          paymentProvider.itemTitle,
-          paymentProvider.finalAmount,
-          paymentProvider.paymentId);
-    } else if (widget.payType == "Rent") {
-      addRentTransaction(
-          "razorpay",
-          paymentProvider.itemId,
-          paymentProvider.finalAmount,
-          paymentProvider.typeId,
-          paymentProvider.videoType);
-    }
-  }
-
-  void handleExternalWalletSelected(ExternalWalletResponse response) {
-    printLog("============ External Wallet Selected ============");
-  }
+  // void handlePaymentErrorResponse(PaymentFailureResponse response) async {
+  //   /*
+  //   * PaymentFailureResponse contains three values:
+  //   * 1. Error Code
+  //   * 2. Error Description
+  //   * 3. Metadata
+  //   * */
+  //   Utils.showSnackbar(context, "fail", "payment_fail", true);
+  //   await paymentProvider.setCurrentPayment("");
+  // }
+  //
+  // void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
+  //   /*
+  //   * Payment Success Response contains three values:
+  //   * 1. Order ID
+  //   * 2. Payment ID
+  //   * 3. Signature
+  //   * */
+  //   paymentProvider.paymentId = response.paymentId.toString();
+  //   printLog("paymentId ========> ${paymentProvider.paymentId}");
+  //   Utils.showSnackbar(context, "success", "payment_success", true);
+  //   if (widget.payType == "Package") {
+  //     addTransaction(
+  //         "razorpay",
+  //         paymentProvider.itemId,
+  //         paymentProvider.itemTitle,
+  //         paymentProvider.finalAmount,
+  //         paymentProvider.paymentId);
+  //   } else if (widget.payType == "Rent") {
+  //     addRentTransaction(
+  //         "razorpay",
+  //         paymentProvider.itemId,
+  //         paymentProvider.finalAmount,
+  //         paymentProvider.typeId,
+  //         paymentProvider.videoType);
+  //   }
+  // }
+  //
+  // void handleExternalWalletSelected(ExternalWalletResponse response) {
+  //   printLog("============ External Wallet Selected ============");
+  // }
   /* ********* Razorpay END ********* */
 
   /* ********* Paytm START ********* */
@@ -1386,36 +1386,36 @@ class AllPaymentState extends State<AllPayment> {
       if (!paymentProvider.loading) {
         if (paymentProvider.payTmModel.result != null) {
           if (paymentProvider.payTmModel.result?.paytmChecksum != null) {
-            try {
-              var response = AllInOneSdk.startTransaction(
-                payTmMerchantID,
-                payTmOrderId,
-                payTmTxnAmount,
-                paymentProvider.payTmModel.result?.paytmChecksum ?? "",
-                payTmCallbackURL,
-                payTmIsStaging,
-                true,
-                true,
-              );
-              response.then((value) {
-                printLog("value ====> $value");
-                setState(() {
-                  paytmResult = value.toString();
-                });
-              }).catchError((onError) {
-                if (onError is PlatformException) {
-                  setState(() {
-                    paytmResult = "${onError.message} \n  ${onError.details}";
-                  });
-                } else {
-                  setState(() {
-                    paytmResult = onError.toString();
-                  });
-                }
-              });
-            } catch (err) {
-              paytmResult = err.toString();
-            }
+            // try {
+            //   var response = AllInOneSdk.startTransaction(
+            //     payTmMerchantID,
+            //     payTmOrderId,
+            //     payTmTxnAmount,
+            //     paymentProvider.payTmModel.result?.paytmChecksum ?? "",
+            //     payTmCallbackURL,
+            //     payTmIsStaging,
+            //     true,
+            //     true,
+            //   );
+            //   response.then((value) {
+            //     printLog("value ====> $value");
+            //     setState(() {
+            //       paytmResult = value.toString();
+            //     });
+            //   }).catchError((onError) {
+            //     if (onError is PlatformException) {
+            //       setState(() {
+            //         paytmResult = "${onError.message} \n  ${onError.details}";
+            //       });
+            //     } else {
+            //       setState(() {
+            //         paytmResult = onError.toString();
+            //       });
+            //     }
+            //   });
+            // } catch (err) {
+            //   paytmResult = err.toString();
+            // }
           } else {
             if (!mounted) return;
             Utils.showSnackbar(context, "", "payment_not_processed", true);
