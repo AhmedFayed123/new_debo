@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../model/contentdetailmodel.dart' as contentdetails;
 import '../model/episodebyseasonmodel.dart' as episode;
@@ -175,6 +176,69 @@ class ApiService {
     );
     dataModel = SocialLinkModel.fromJson(response.data);
     return dataModel;
+  }
+
+  Future<Map<String, dynamic>> resetPassword({
+    required String email,
+    String? password,
+    String? confirmPassword,
+  }) async {
+    const apiName = "reset_password";
+
+    try {
+      final data = {
+        'email': email,
+        if (password != null) 'password': password,
+        if (confirmPassword != null) 'password_confirmation': confirmPassword,
+      };
+
+      final response = await dio.post(
+        '$baseUrl$apiName',
+        data: data,
+        options: optHeaders,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      printLog("Reset password error: ${e.response?.data}");
+      throw Exception(e.response?.data?['message'] ?? "Password reset failed");
+    }
+  }
+  Future<Map<String, dynamic>> registerWithEmail({
+    required String fullName,
+    required String email,
+    required String password,
+    required String mobileNumber,
+  }) async {
+    const apiName = "register";
+
+    try {
+      final response = await dio.post(
+        '$baseUrl$apiName',
+        options: optHeaders,
+        data: FormData.fromMap({
+          'full_name': fullName,
+          'email': email,
+          'password': password,
+          'mobile_number': mobileNumber,
+          'device_type': Platform.isAndroid ? 'android' : 'ios',
+          'device_token': await FirebaseMessaging.instance.getToken(),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        printLog("Registration Success: ${response.data}");
+        return response.data;
+      } else {
+        throw Exception("Failed with status: ${response.statusCode}");
+      }
+    } on DioException catch (e) {
+      printLog("Dio Error: ${e.response?.data}");
+      throw Exception(e.response?.data?['message'] ?? "Registration failed");
+    } catch (e) {
+      printLog("Registration Error: $e");
+      throw Exception("An error occurred during registration");
+    }
   }
 
   /* type => 1-OTP, 2-Google, 3-Apple, 4-Normal */

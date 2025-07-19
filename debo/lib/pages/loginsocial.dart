@@ -1,6 +1,6 @@
 import 'dart:io';
 
-
+import 'package:debo/pages/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,7 @@ import '../utils/strings.dart';
 import '../utils/utils.dart';
 import '../widget/myimage.dart';
 import '../widget/mytext.dart';
+import 'forgot_password_screen.dart';
 import 'otpverify.dart';
 
 class LoginSocial extends StatefulWidget {
@@ -33,6 +34,9 @@ class LoginSocialState extends State<LoginSocial> {
   late GeneralProvider generalProvider;
 
   final numberController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
   String? mobileNumber,
       email,
       userName,
@@ -75,8 +79,8 @@ class LoginSocialState extends State<LoginSocial> {
           generalProvider.pagesModel.result != null) {
         if ((generalProvider.pagesModel.result?.length ?? 0) > 0) {
           for (var i = 0;
-              i < (generalProvider.pagesModel.result?.length ?? 0);
-              i++) {
+          i < (generalProvider.pagesModel.result?.length ?? 0);
+          i++) {
             if ((generalProvider.pagesModel.result?[i].pageName ?? "")
                 .toLowerCase()
                 .contains("privacy")) {
@@ -105,6 +109,8 @@ class LoginSocialState extends State<LoginSocial> {
   @override
   void dispose() {
     numberController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -148,90 +154,75 @@ class LoginSocialState extends State<LoginSocial> {
                       fontstyle: FontStyle.normal,
                     ),
                     const SizedBox(height: 7),
-                    MyText(
-                      color: descTextColor,
-                      text: "login_with_mobile_note",
-                      fontsizeNormal: 14,
-                      fontsizeWeb: 15,
-                      multilanguage: true,
-                      fontweight: FontWeight.w500,
-                      maxline: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textalign: TextAlign.center,
-                      fontstyle: FontStyle.normal,
-                    ),
-                    const SizedBox(height: 30),
+                    // MyText(
+                    //   color: descTextColor,
+                    //   text: "login_with_mobile_note",
+                    //   fontsizeNormal: 14,
+                    //   fontsizeWeb: 15,
+                    //   multilanguage: true,
+                    //   fontweight: FontWeight.w500,
+                    //   maxline: 2,
+                    //   overflow: TextOverflow.ellipsis,
+                    //   textalign: TextAlign.center,
+                    //   fontstyle: FontStyle.normal,
+                    // ),
+                    // const SizedBox(height: 30),
 
-                    /* Enter Mobile Number */
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: colorPrimary,
-                          width: 0.7,
+                    // Email Field
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: "email",
+                        labelStyle: TextStyle(color: descTextColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: colorPrimary),
                         ),
-                        color: edtViewShadowColor,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(5),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: colorPrimary),
                         ),
+                        filled: true,
+                        fillColor: edtViewShadowColor,
                       ),
-                      child: IntlPhoneField(
-                        disableLengthCheck: true,
-                        textAlignVertical: TextAlignVertical.center,
-                        autovalidateMode: AutovalidateMode.disabled,
-                        controller: numberController,
-                        style: const TextStyle(fontSize: 16, color: white),
-                        showCountryFlag: false,
-                        showDropdownIcon: false,
-                        initialCountryCode: 'IN',
-                        dropdownTextStyle: GoogleFonts.inter(
-                          color: white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.done,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          filled: false,
-                          hintStyle: GoogleFonts.inter(
-                            color: descTextColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          hintText: enterYourMobileNumber,
-                        ),
-                        onChanged: (phone) {
-                          printLog('===> ${phone.completeNumber}');
-                          printLog('===> ${numberController.text}');
-                          mobileNumber = phone.completeNumber;
-                          printLog('===>mobileNumber $mobileNumber');
-                        },
-                        onCountryChanged: (country) {
-                          printLog('===> ${country.name}');
-                          printLog('===> ${country.code}');
-                        },
-                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      style: TextStyle(color: white),
                     ),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 15),
+
+                    // Password Field
+                    TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: "password",
+                        labelStyle: TextStyle(color: descTextColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: colorPrimary),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: colorPrimary),
+                        ),
+                        filled: true,
+                        fillColor: edtViewShadowColor,
+                      ),
+                      obscureText: true,
+                      style: TextStyle(color: white),
+                    ),
+                    const SizedBox(height: 20),
 
                     /* Login Button */
                     InkWell(
-                      onTap: () {
-                        printLog("Click mobileNumber ==> $mobileNumber");
-                        if (numberController.text.toString().isEmpty) {
+                      onTap: () async {
+                        if (emailController.text.isEmpty ||
+                            passwordController.text.isEmpty) {
                           Utils.showSnackbar(
-                              context, "info", "login_with_mobile_note", true);
-                        } else {
-                          printLog("mobileNumber ==> $mobileNumber");
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  OTPVerify(mobileNumber ?? ""),
-                            ),
-                          );
+                              context, "info", "fill_all_fields", true);
+                          return;
                         }
+                        await _performEmailLogin(
+                            emailController.text, passwordController.text);
                       },
                       borderRadius: BorderRadius.circular(30),
                       child: Container(
@@ -255,7 +246,69 @@ class LoginSocialState extends State<LoginSocial> {
                       ),
                     ),
                     const SizedBox(height: 10),
+// After the login button in your build method
+                    const SizedBox(height: 10),
 
+// Forgot Password Text
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: () {
+                          _navigateToForgotPassword();
+                        },
+                        child: MyText(
+                          color: colorPrimary,
+                          text: "forgot_password",
+                          fontsizeNormal: 14,
+                          fontsizeWeb: 16,
+                          multilanguage: true,
+                          fontweight: FontWeight.w600,
+                          maxline: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textalign: TextAlign.end,
+                          fontstyle: FontStyle.normal,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+// Don't have an account? Sign Up
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MyText(
+                          color: descTextColor,
+                          text: "dont_have_account",
+                          fontsizeNormal: 14,
+                          fontsizeWeb: 16,
+                          multilanguage: true,
+                          fontweight: FontWeight.w500,
+                          maxline: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textalign: TextAlign.center,
+                          fontstyle: FontStyle.normal,
+                        ),
+                        const SizedBox(width: 5),
+                        InkWell(
+                          onTap: () {
+                            _navigateToSignUp();
+                          },
+                          child: MyText(
+                            color: colorPrimary,
+                            text: "sign_up",
+                            fontsizeNormal: 14,
+                            fontsizeWeb: 16,
+                            multilanguage: true,
+                            fontweight: FontWeight.w600,
+                            maxline: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textalign: TextAlign.center,
+                            fontstyle: FontStyle.normal,
+                          ),
+                        ),
+                      ],
+                    ),
                     /* Privacy & TermsCondition link */
                     if (strPrivacyAndTNC != null)
                       Utils.htmlTexts(strPrivacyAndTNC),
@@ -381,49 +434,6 @@ class LoginSocialState extends State<LoginSocial> {
                           ),
                         ),
                       ),
-
-                    /* Facebook Login Button */
-                    // Container(
-                    //   width: MediaQuery.of(context).size.width,
-                    //   height: 52,
-                    //   padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                    //   decoration: BoxDecoration(
-                    //     color: white,
-                    //     borderRadius: BorderRadius.circular(26),
-                    //   ),
-                    //   alignment: Alignment.center,
-                    //   child: InkWell(
-                    //     onTap: () {
-                    //       printLog("Clicked on : ====> loginWith Facebook");
-                    //       facebookLogin();
-                    //     },
-                    //     borderRadius: BorderRadius.circular(26),
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: [
-                    //         MyImage(
-                    //           width: 30,
-                    //           height: 30,
-                    //           imagePath: "ic_facebook.png",
-                    //           fit: BoxFit.contain,
-                    //         ),
-                    //         const SizedBox(width: 30),
-                    //         MyText(
-                    //           color: black,
-                    //           text: "loginwithfacebook",
-                    //           fontsizeNormal: 14,
-                    //           fontsizeWeb: 16,
-                    //           multilanguage: true,
-                    //           fontweight: FontWeight.w600,
-                    //           maxline: 1,
-                    //           overflow: TextOverflow.ellipsis,
-                    //           textalign: TextAlign.center,
-                    //           fontstyle: FontStyle.normal,
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -456,6 +466,85 @@ class LoginSocialState extends State<LoginSocial> {
       ),
     );
   }
+  void _navigateToForgotPassword() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ForgotPasswordScreen(),
+      ),
+    );
+  }
+
+  void _navigateToSignUp() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SignUpScreen(),
+      ),
+    );
+  }
+  Future<void> _performEmailLogin(String email, String password) async {
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    final sectionDataProvider =
+    Provider.of<SectionDataProvider>(context, listen: false);
+    final bottombarProvider =
+    Provider.of<BottombarProvider>(context, listen: false);
+
+    Utils.showProgress(context);
+
+    await generalProvider.loginNormal(
+        email,
+        password,
+        Constant.deviceName,
+        strDeviceType,
+        strDeviceToken);
+
+    if (!generalProvider.loading) {
+      if (generalProvider.loginNormalModel.status == 200) {
+        Utils.saveUserCreds(
+          userID: generalProvider.loginNormalModel.result?[0].id.toString(),
+          fullName:
+          generalProvider.loginNormalModel.result?[0].fullName.toString(),
+          userName:
+          generalProvider.loginNormalModel.result?[0].userName.toString(),
+          userEmail:
+          generalProvider.loginNormalModel.result?[0].email.toString(),
+          userMobile: generalProvider.loginNormalModel.result?[0].mobileNumber
+              .toString(),
+          userImage:
+          generalProvider.loginNormalModel.result?[0].image.toString(),
+          userPremium:
+          generalProvider.loginNormalModel.result?[0].isBuy.toString(),
+          userType: generalProvider.loginNormalModel.result?[0].type.toString(),
+          deviceType:
+          generalProvider.loginNormalModel.result?[0].deviceType.toString(),
+          deviceToken: generalProvider.loginNormalModel.result?[0].deviceToken
+              .toString(),
+        );
+
+        Constant.userID =
+            generalProvider.loginNormalModel.result?[0].id.toString();
+
+        await bottombarProvider.setBottomNavIndex(0);
+        await bottombarProvider.setAppbarVisibility(true);
+        await homeProvider.setLoading(true);
+        await sectionDataProvider.getSectionBanner("0", "1");
+        await sectionDataProvider.getSectionList("0", "1", 1);
+
+        await Utils.initializeHiveBoxes();
+
+        if (!mounted) return;
+        Utils.hideProgress();
+        if (!mounted) return;
+        Utils.redirectToMainPage(context: context);
+      } else {
+        if (!mounted) return;
+        Utils.hideProgress();
+        Utils.showSnackbar(context, "fail",
+            "${generalProvider.loginNormalModel.message}", false);
+      }
+    }
+  }
 
   /* Google Login */
   Future<void> _gmailLogin() async {
@@ -475,7 +564,7 @@ class LoginSocialState extends State<LoginSocial> {
     UserCredential userCredential;
     try {
       GoogleSignInAuthentication googleSignInAuthentication =
-          await user.authentication;
+      await user.authentication;
       AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
@@ -512,17 +601,10 @@ class LoginSocialState extends State<LoginSocial> {
 
   /* Apple Login */
   Future<void> signInWithApple() async {
-    // To prevent replay attacks with the credential returned from Apple, we
-    // include a nonce in the credential request. When signing in in with
-    // Firebase, the nonce in the id token returned by Apple, is expected to
-    // match the sha256 hash of `rawNonce`.
     final rawNonce = generateNonce();
-
-    /// Returns the sha256 hash of [input] in hex notation.
     final nonce = Utils.sha256ofString(rawNonce);
 
     try {
-      // Request credential for the currently signed in Apple account.
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -531,7 +613,6 @@ class LoginSocialState extends State<LoginSocial> {
         nonce: nonce,
       );
 
-      // Create an `OAuthCredential` from the credential returned by Apple.
       final oauthCredential = OAuthProvider("apple.com").credential(
         idToken: appleCredential.identityToken,
         rawNonce: rawNonce,
@@ -541,35 +622,22 @@ class LoginSocialState extends State<LoginSocial> {
       if (!mounted) return;
       Utils.showProgress(context);
 
-      // Sign in the user with Firebase. If the nonce we generated earlier does
-      // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       final authResult = await _auth.signInWithCredential(oauthCredential);
 
       String? displayName;
-
       final firebaseUser = authResult.user;
-
       dynamic firebasedId;
+
       if (appleCredential.givenName != null) {
         displayName =
-            '${appleCredential.givenName} ${appleCredential.familyName}';
+        '${appleCredential.givenName} ${appleCredential.familyName}';
         userEmail = authResult.user?.email.toString() ?? "";
-
         await firebaseUser?.updateDisplayName(displayName);
-
-        printLog("===>userEmail $userEmail");
-        printLog("===>displayName $displayName");
       } else {
         userEmail = firebaseUser?.email.toString() ?? "";
         firebasedId = firebaseUser?.uid.toString();
         displayName = firebaseUser?.displayName.toString();
-
-        printLog("===>userEmail-else $userEmail");
-        printLog("===>displayName-else $displayName");
       }
-      printLog("userEmail =====FINAL==> $userEmail");
-      printLog("firebasedId ===FINAL==> $firebasedId");
-      printLog("displayName ===FINAL==> $displayName");
 
       checkAndNavigate(
           userEmail,
@@ -586,48 +654,40 @@ class LoginSocialState extends State<LoginSocial> {
     email = mail;
     userName = displayName;
     strType = type;
-    printLog('checkAndNavigate email ========>> $email');
-    printLog('checkAndNavigate userName =====>> $userName');
-    printLog('checkAndNavigate strType ======>> $strType');
-    printLog('checkAndNavigate mProfileImg ==>> $mProfileImg');
 
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
     final sectionDataProvider =
-        Provider.of<SectionDataProvider>(context, listen: false);
+    Provider.of<SectionDataProvider>(context, listen: false);
     final bottombarProvider =
-        Provider.of<BottombarProvider>(context, listen: false);
+    Provider.of<BottombarProvider>(context, listen: false);
     await generalProvider.loginWithSocial(email, userName, strType,
         Constant.deviceName, strDeviceType, strDeviceToken, mProfileImg);
-    printLog('checkAndNavigate loading ==>> ${generalProvider.loading}');
 
     if (!generalProvider.loading) {
       if (generalProvider.loginSocialModel.status == 200) {
-        printLog('Login Successfull!');
         Utils.saveUserCreds(
           userID: generalProvider.loginSocialModel.result?[0].id.toString(),
           fullName:
-              generalProvider.loginSocialModel.result?[0].fullName.toString(),
+          generalProvider.loginSocialModel.result?[0].fullName.toString(),
           userName:
-              generalProvider.loginSocialModel.result?[0].userName.toString(),
+          generalProvider.loginSocialModel.result?[0].userName.toString(),
           userEmail:
-              generalProvider.loginSocialModel.result?[0].email.toString(),
+          generalProvider.loginSocialModel.result?[0].email.toString(),
           userMobile: generalProvider.loginSocialModel.result?[0].mobileNumber
               .toString(),
           userImage:
-              generalProvider.loginSocialModel.result?[0].image.toString(),
+          generalProvider.loginSocialModel.result?[0].image.toString(),
           userPremium:
-              generalProvider.loginSocialModel.result?[0].isBuy.toString(),
+          generalProvider.loginSocialModel.result?[0].isBuy.toString(),
           userType: generalProvider.loginSocialModel.result?[0].type.toString(),
           deviceType:
-              generalProvider.loginSocialModel.result?[0].deviceType.toString(),
+          generalProvider.loginSocialModel.result?[0].deviceType.toString(),
           deviceToken: generalProvider.loginSocialModel.result?[0].deviceToken
               .toString(),
         );
 
-        // Set UserID for Next
         Constant.userID =
             generalProvider.loginSocialModel.result?[0].id.toString();
-        printLog('Constant userID ==>> ${Constant.userID}');
 
         await bottombarProvider.setBottomNavIndex(0);
         await bottombarProvider.setAppbarVisibility(true);
@@ -635,7 +695,6 @@ class LoginSocialState extends State<LoginSocial> {
         await sectionDataProvider.getSectionBanner("0", "1");
         await sectionDataProvider.getSectionList("0", "1", 1);
 
-        /* Initialize Hive */
         await Utils.initializeHiveBoxes();
 
         if (!mounted) return;
@@ -643,7 +702,6 @@ class LoginSocialState extends State<LoginSocial> {
         if (!mounted) return;
         Utils.redirectToMainPage(context: context);
       } else {
-        // Hide Progress Dialog
         if (!mounted) return;
         Utils.hideProgress();
         Utils.showSnackbar(context, "fail",

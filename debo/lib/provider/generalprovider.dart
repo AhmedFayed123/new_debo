@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../model/Register_model.dart';
 import '../model/generalsettingmodel.dart' as settings;
 import '../model/introscreenmodel.dart';
 import '../model/loginregistermodel.dart';
@@ -23,6 +24,7 @@ class GeneralProvider extends ChangeNotifier {
   LoginRegisterModel loginOTPModel = LoginRegisterModel();
   LoginRegisterModel loginNormalModel = LoginRegisterModel();
   LoginRegisterModel loginTVModel = LoginRegisterModel();
+  RegisterModel registerNormalModel = RegisterModel();
 
   bool loading = false;
   String? appDescription;
@@ -139,6 +141,56 @@ class GeneralProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> registerNormal(
+      String fullName,
+      String email,
+      String password,
+      String mobileNumber,
+      ) async {
+    loading = true;
+    notifyListeners();
+
+    try {
+      final response = await ApiService().registerWithEmail(
+        fullName: fullName,
+        email: email,
+        password: password,
+        mobileNumber: mobileNumber,
+      );
+
+      registerNormalModel = RegisterModel.fromJson(response);
+
+      printLog("Registration Status: ${registerNormalModel.status}");
+      printLog("Registration Message: ${registerNormalModel.message}");
+      printLog("User ID: ${registerNormalModel.userId}");
+
+    } catch (e) {
+      registerNormalModel = RegisterModel(
+        status: 500,
+        message: e.toString(),
+      );
+      printLog("Registration Error: $e");
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
+  Future<Map<String, dynamic>> resetPassword({
+    required String email,
+    String? password,
+    String? confirmPassword,
+  }) async {
+    try {
+      final response = await ApiService().resetPassword(
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
   Future<void> loginWithTV(strOTP) async {
     printLog("loginWithTV strOTP :==> $strOTP");
 
